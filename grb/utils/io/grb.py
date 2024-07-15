@@ -9,7 +9,7 @@ from typing import List
 def parse(lines: List[str], comment: str = '#') -> List[dict]:
     """ Parses the Gamma-Ray Burst tables.
 
-    :param path: path to file
+    :param lines: list of strings to parse
     :param comment: character for comments
     :return: parsed data as a list of dictionaries
     """
