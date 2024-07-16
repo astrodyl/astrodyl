@@ -76,7 +76,7 @@ def plot_viewing_angles(grbs: List[dict]) -> None:
 
 
 if __name__ == '__main__':
-    input_path = r"C:\Projects\repos\grb\grb\resources\grbs_laio_2024.txt"
+    input_path = r"/grb/resources/grbs_laio_2024.txt"
 
     grb_list = parser.parse(txt.read(input_path))
     plot_viewing_angles(grb_list)
