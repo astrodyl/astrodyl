@@ -5,7 +5,7 @@ from grb.utils.io import txt
 
 
 """
-    XRT.py
+    xrt.py
 
     The X-Ray Telescope (XRT) class parses XRT light curve files and
     plots the resulting light curve. AN option is available to plot
