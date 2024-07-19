@@ -1,6 +1,25 @@
-from grb.parsers.liao.entry import GRB
+from grb.definitions.bounded_value import BoundedValue
+from grb.definitions.entry import GRB
 from grb.utils.io import txt
-from grb.utils.math.bounded_value import BoundedValue
+
+
+"""
+    ryan.py
+    
+    Parses data from Table 4 of Ryan et al. 2015. Each row of the table is
+    parsed and stored in a GRB object defined in grb/definitions/entry.py.
+    
+    Ryan ran MCMC using the viewing angle / opening angle as a fitting parameter
+    rather than the viewing angle on its own. The BoundedValue class is used to 
+    easily transform this ratio to the viewing angle. Any correlations between the
+    viewing angle and opening angle are ignored in the transformation.
+    
+    GAMMA RAY BURSTS ARE OBSERVED OFF-AXIS (2015):
+        - https://arxiv.org/pdf/1405.5516
+        
+    Results from Ryan et al. 2015:
+        - https://cosmo.nyu.edu/afterglowlibrary/
+"""
 
 
 class Ryan:
@@ -32,11 +51,8 @@ class Ryan:
 
             self.grbs.append(grb)
 
-    def plot(self):
-        pass
-
 
 if __name__ == '__main__':
-    input_path = r"C:\Projects\repos\grb\grb\resources\grbs_ryan_2015.txt"
-    sources = Ryan(input_path)
-    print()
+    sources = Ryan(r"C:\Projects\repos\grb\grb\resources\grbs_ryan_2015.txt")
+
+    print(len(sources.grbs))

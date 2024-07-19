@@ -1,4 +1,4 @@
-from grb.utils.math.bounded_value import BoundedValue
+from grb.definitions.bounded_value import BoundedValue
 
 
 class GRB:
@@ -13,9 +13,7 @@ class GRB:
             self.parse(line)
 
     def parse(self, line: str):
-        """
-
-        :return:
+        """ Parses a line from the grb_list_liao.txt file.
         """
         viewing = line[3].replace('+', '').split(' ')
         opening = line[4].replace('+', '').split(' ')

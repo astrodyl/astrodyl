@@ -1,6 +1,7 @@
 import os
 import matplotlib.pyplot as plt
 
+from grb.definitions.xrt_data_mode import XRTDataMode
 from grb.utils.io import txt
 
 
@@ -16,20 +17,6 @@ from grb.utils.io import txt
     Data archive: https://www.swift.ac.uk/xrt_products/
     Data description: https://www.swift.ac.uk/xrt_curves/docs.php#products
 """
-
-
-class XRTDataMode:
-    """ Swift's XRT has multiple data modes (e.g., photon counting,
-    windowed timing) each of which contain the same type of data.
-    """
-    def __init__(self):
-        self.times: list = []
-        self.time_lowers: list = []
-        self.time_uppers: list = []
-
-        self.fluxes: list = []
-        self.flux_lowers: list = []
-        self.flux_uppers: list = []
 
 
 class XRT:
@@ -150,7 +137,7 @@ class XRT:
 
 
 if __name__ == '__main__':
-    input_path = r"C:\Projects\repos\grb\grb\resources\grbs\GRB140506A\xrt.txt"
+    input_path = r"/grb/resources/grbs/GRB140506A/xrt.txt"
 
     xrt = XRT(input_path)
     xrt.parse()

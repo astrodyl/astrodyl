@@ -101,8 +101,8 @@ def get_column(field: str) -> int:
 if __name__ == '__main__':
     """ Main entry point for separator """
 
-    input_path = r"C:\Projects\repos\grb\grb\resources\grbs_laio_2024.txt"
-    output_path = r"C:\Projects\repos\grb\grb\results\filtered_grbs.txt"
+    input_path = r"/grb/resources/grbs_laio_2024.txt"
+    output_path = r"/grb/results/filtered_grbs.txt"
 
     content = txt.read(input_path)
 
