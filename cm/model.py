@@ -1,11 +1,19 @@
 import math
-from matplotlib import pyplot as plt
 
 from cm.definitions.hardware.filter import Filter
 from cm.definitions.hardware.telescope import Telescope
 from cm.definitions.parameters import Parameters
 from cm.definitions.transient import Transient
 from cm.definitions.hardware.hardware import Hardware
+
+
+"""
+    Model.py
+
+    Implements the afterglow exposure model for the campaign manager.
+
+    Documentation: https://astrodyl.gitbook.io/astrodyl-docs/campaign-manager/models
+"""
 
 
 class Model:
@@ -29,9 +37,6 @@ class Model:
 
     def get_hardware_dependence(self) -> float:
         """ Returns the contribution due to the hardware efficiencies.
-        Filter efficiencies are stored as a value between 0.0 and 1.0,
-        while the telescope efficiencies are stored as an inverse such
-        that the values are between 1.0 and 0.0.
 
         :return: contribution of the hardware efficiencies
         """
@@ -91,7 +96,7 @@ class Model:
 
         return r_v * self.transient.ebv * (a + b / r_v)
 
-    def magnitude(self, time: float):
+    def magnitude(self, time: float) -> float:
         """ Models the magnitude at the provided time given the reference
         parameters.
 
@@ -121,64 +126,19 @@ class Model:
 
 if __name__ == '__main__':
 
-    # Define the transient parameters
-    transient = Transient(0.0, a=-1, b=-0.7, ebv=0.0)
+    model = Model(
+        transient=Transient(0.0, a=-1.0, b=-0.7, ebv=0.0),
+        hardware=Hardware(
+            Filter('R', 472188e9, 0.0379989, 3.06400),
+            Telescope('P5', 0.237073)
+        ),
+        params=Parameters(
+            Filter('R', 472188e9, 0.0379989, 3.06400),
+            time=1800.0,
+            magnitude=15.0
+        ),
+        snr=10.0
+    )
 
-    # Define the hardware
-    filter_ = Filter('B', 688703000000000.0, 0.0583863, 4.06300)
-    telescope = Telescope('P5', 0.237073)
-    hardware = Hardware(filter_, telescope)
-
-    # Define the reference parameters
-    reference_filter = Filter('R', 472188000000000.0, 0.0379989, 3.06400)
-    parameters = Parameters(reference_filter, 3600.0, 20.0)
-
-    # Define the model
-    afterglow_model = Model(transient, hardware, parameters, 10.0)
-
-    # Calculate the exposure lengths
-    times = [float(i) for i in range(1, 3601, 1)]
-    magnitudes = [afterglow_model.magnitude(time) for time in times]
-    exposure_lengths = [afterglow_model.exposure_length(time) for time in times]
-
-    print(magnitudes)
-
-    fig, ax = plt.subplots()
-    ax.plot([time / 60.0 for time in times], exposure_lengths, label='B', color='blue')
-
-    # Define additional filters
-    filters = [
-        Filter('V', 547266000000000.0, 0.0564145, 3.63600),
-        Filter('R', 472188000000000.0, 0.0379989, 3.06400),
-        Filter('I', 374741000000000.0, 0.0435316, 2.41600)
-    ]
-
-    colors = ['green', 'red', 'darkblue']
-
-    # Plot additional filters
-    for i, f in enumerate(filters):
-        afterglow_model.hardware.filter = f
-        ax.plot([time / 60.0 for time in times], [afterglow_model.exposure_length(time) for time in times],
-                label=f.name, color=colors[i])
-
-    ax2 = ax.twiny()
-    flux_ticks = ax.get_xticks()
-    afterglow_model.hardware.filter = filters[1]
-    flux_ticks2 = []
-    for tick in flux_ticks:
-        if tick <= 0.0:
-            flux_ticks2.append(1)
-        else:
-            flux_ticks2.append(tick)
-
-    # Displays magnitude in I band
-    magnitude_ticks = [afterglow_model.magnitude(flux_tick * 60.0) for flux_tick in flux_ticks2]
-    ax2.set_xticks(flux_ticks2)
-    ax2.set_xticklabels([f'{mag:.2f}' for mag in magnitude_ticks])
-    ax2.set_xlabel('Magnitude')
-    ax2.tick_params(axis='x')
-
-    ax.set_xlabel('Time Since Trigger (Minutes)')
-    ax.set_ylabel('Exposure Length (s)')
-    ax.legend()
-    plt.show()
+    print(model.magnitude(1800.0))
+    print(model.exposure_length(1800.0))

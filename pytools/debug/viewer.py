@@ -128,11 +128,11 @@ class Viewer:
         self.slider_temporal = Slider(plt.axes((0.2, 0.2, 0.7, 0.03)), 'Temporal Index', -3., 3.,
                                       facecolor='skyblue', track_color='steelblue', valinit=-1.0)
         self.slider_spectral = Slider(plt.axes((0.2, 0.15, 0.7, 0.03)), 'Spectral Index', -3., 3.,
-                                      facecolor='skyblue', track_color='steelblue',valinit=-0.7)
+                                      facecolor='skyblue', track_color='steelblue', valinit=-0.7)
         self.slider_ref_time = Slider(plt.axes((0.2, 0.1, 0.7, 0.03)), 'Reference Time', 1., 120.,
-                                      facecolor='skyblue', track_color='steelblue',valinit=60.)
+                                      facecolor='skyblue', track_color='steelblue', valinit=60.)
         self.slider_ref_mag = Slider(plt.axes((0.2, 0.05, 0.7, 0.03)), 'Reference Mag', 0., 30.,
-                                     facecolor='skyblue', track_color='steelblue',valinit=20.)
+                                     facecolor='skyblue', track_color='steelblue', valinit=20.)
 
         # Assign event handlers
         self.slider_v_mag.on_changed(self.on_v_mag_update)
@@ -281,7 +281,6 @@ class Viewer:
         """
         self.model.hardware.filter = self.filters['V']
         self.marker_v_mag.set_ydata([self.model.exposure_length(time, self.model.magnitude(time))])
-        self.figure.canvas.draw_idle()
 
     def update_lines(self) -> None:
         """ Recalculates the exposure lengths and updates the plotted lines
@@ -337,4 +336,3 @@ if __name__ == '__main__':
     viewer = Viewer(times=[float(i) for i in range(1, 7201, 2)])
 
     viewer.show()
-
