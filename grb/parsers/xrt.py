@@ -96,48 +96,38 @@ class XRT:
             elif mode == 'PC_incbad':
                 self.pc_start = index + 1
 
-    def plot(self, wt: bool = False, pc: bool = True) -> None:
+    def plot(self, wt: bool = True, pc: bool = True) -> None:
         """ Plots the XRT data.
 
         :param wt: plot the Windowed Timing data
         :param pc: plot the Photon Counting data
         """
-        if wt and pc:
-            data_used = '(WT + PC)'
-            times = self.windowed_timing.times + self.photon_counting.times
-            fluxes = self.windowed_timing.fluxes + self.photon_counting.fluxes
-            y_error_lowers = self.windowed_timing.flux_lowers + self.photon_counting.flux_lowers
-            y_error_uppers = self.windowed_timing.flux_uppers + self.photon_counting.flux_uppers
-        elif wt:
-            data_used = '(WT)'
-            times = self.windowed_timing.times
-            fluxes = self.windowed_timing.fluxes
-            y_error_lowers = self.windowed_timing.flux_lowers
-            y_error_uppers = self.photon_counting.flux_uppers
-        elif pc:
-            data_used = '(PC)'
-            times = self.photon_counting.times
-            fluxes = self.photon_counting.fluxes
-            y_error_lowers = self.photon_counting.flux_lowers
-            y_error_uppers = self.photon_counting.flux_uppers
-        else:
-            return
+        if wt:
+            plt.errorbar(self.windowed_timing.times, self.windowed_timing.fluxes,
+                         yerr=(self.windowed_timing.flux_lowers, self.windowed_timing.flux_uppers),
+                         fmt='.', color='royalblue', ecolor='black', label='Windowed Timing')
 
-        plt.errorbar(times, fluxes, yerr=(y_error_lowers, y_error_uppers), fmt='.', color='royalblue', ecolor='black')
-        plt.title(f'Swift/XRT Flux Curve of {self.event} ' + data_used)
-        plt.xlabel('Time since BAT trigger (s)')
-        plt.ylabel('Flux (0.3 - 10keV) (erg/cm^2/s)')
-        plt.xscale('log')
-        plt.yscale('log')
+        if pc:
+            plt.errorbar(self.photon_counting.times, self.photon_counting.fluxes,
+                         yerr=(self.photon_counting.flux_lowers, self.photon_counting.flux_uppers),
+                         fmt='.', color='purple', ecolor='black', label='Photon Counting')
 
-        plt.show()
+        if wt or pc:
+            plt.title(f'Swift XRT Flux Curve of {self.event}')
+            plt.xlabel('Time since BAT trigger (s)')
+            plt.ylabel('Flux (0.3 - 10keV) (erg/cm^2/s)')
+            plt.xscale('log')
+            plt.yscale('log')
+            plt.legend()
 
-    def get_event(self):
+            plt.show()
+
+    def get_event(self) -> str:
         return os.path.basename(os.path.dirname(self.path))
 
 
 if __name__ == '__main__':
-    input_path = r"/grb/resources/grbs/GRB140506A/xrt.txt"
+    input_path = os.path.join(os.getcwd(), 'grb', r"resources/grbs/GRB_140506A/xrt.txt")
 
     xrt = XRT(input_path)
     xrt.parse()

@@ -1,7 +1,5 @@
 import math
 
-from cm.definitions.hardware.filter import Filter
-from cm.definitions.hardware.telescope import Telescope
 from cm.definitions.parameters import Parameters
 from cm.definitions.transient import Transient
 from cm.definitions.hardware.hardware import Hardware
@@ -37,6 +35,9 @@ class Model:
 
     def get_hardware_dependence(self) -> float:
         """ Returns the contribution due to the hardware efficiencies.
+        Filter efficiencies are stored as a value between 0.0 and 1.0,
+        while the telescope efficiencies are defined as the inverse
+        time needed to achieve an SNR of 5 at a limiting magnitude.
 
         :return: contribution of the hardware efficiencies
         """
@@ -66,16 +67,16 @@ class Model:
     def get_spectral_dependence(self) -> float:
         """ Calculates the spectral contribution
 
-        :return:
+        :return:contribution of the spectral dependence
         """
         return ((self.hardware.filter.frequency / self.reference_parameters.filter.frequency)
                 ** self.transient.spectral_index)
 
     def get_extinction_dependence(self, r_v: float = 3.1) -> float:
         """ Calculates the dust extinction contribution for the extinguished
-        power law model.
+        power law model. Implemented from Cardelli et al. (1989).
 
-        :param r_v:  ???
+        :param r_v: extinction coefficient in V band
         :return: contribution of the dust extinction dependence
         """
         x = 1.0 / self.hardware.filter.wavelength(um=True)
@@ -101,7 +102,7 @@ class Model:
         parameters.
 
         :param time: number of seconds since the transient trigger time
-        :return: Modeled magnitude at the provided time
+        :return: modeled magnitude at the provided time
         """
         return (self.reference_parameters.magnitude -
                 (2.5 * (math.log10(self.get_temporal_dependence(time))
@@ -122,23 +123,3 @@ class Model:
 
         return (self.get_snr_dependence() * self.get_hardware_dependence()
                 * (10.0 ** ((magnitude - 20.0) / 2.5)) * (self.correction_factor or 1.0))
-
-
-if __name__ == '__main__':
-
-    model = Model(
-        transient=Transient(0.0, a=-1.0, b=-0.7, ebv=0.0),
-        hardware=Hardware(
-            Filter('R', 472188e9, 0.0379989, 3.06400),
-            Telescope('P5', 0.237073)
-        ),
-        params=Parameters(
-            Filter('R', 472188e9, 0.0379989, 3.06400),
-            time=1800.0,
-            magnitude=15.0
-        ),
-        snr=10.0
-    )
-
-    print(model.magnitude(1800.0))
-    print(model.exposure_length(1800.0))
